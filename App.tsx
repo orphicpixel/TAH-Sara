@@ -102,9 +102,7 @@ const App: React.FC = () => {
     <div className="flex flex-col h-screen font-sans">
         <header className="bg-white shadow-md p-4 flex items-center justify-between sticky top-0 z-10">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center">
-              <SaraAvatar />
-            </div>
+            <SaraAvatar size="large" />
             <div>
               <h1 className="text-xl font-bold text-gray-800">Sara</h1>
               <p className="text-sm text-green-500 flex items-center gap-1.5">

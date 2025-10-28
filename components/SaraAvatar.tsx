@@ -5,11 +5,15 @@ interface SaraAvatarProps {
 }
 
 const SaraAvatar: React.FC<SaraAvatarProps> = ({ size = 'small' }) => {
-    const sizeClasses = size === 'large' ? 'w-12 h-12 text-2xl' : 'w-10 h-10 text-lg';
+    const sizeClasses = size === 'large' ? 'w-12 h-12' : 'w-10 h-10';
+    const avatarUrl = 'https://theawayhome.com/wp-content/uploads/2025/05/tah-favicon-300x300.png';
+
     return (
-        <div className={`${sizeClasses} bg-blue-500 rounded-full flex items-center justify-center text-white font-bold shrink-0 shadow-sm`}>
-            S
-        </div>
+        <img
+            src={avatarUrl}
+            alt="Sara's avatar"
+            className={`${sizeClasses} rounded-full object-cover shrink-0 shadow-sm`}
+        />
     );
 };
 
