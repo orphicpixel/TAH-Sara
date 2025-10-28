@@ -4,6 +4,7 @@ import { getSaraResponse } from './services/geminiService';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
 import SaraAvatar from './components/SaraAvatar';
+import SaraTypingIndicator from './components/SaraTypingIndicator';
 
 const initialMessage: Message = {
   id: 'sara-initial-1',
@@ -136,22 +137,7 @@ const App: React.FC = () => {
           {messages.map((msg) => (
             <ChatMessage key={msg.id} message={msg} />
           ))}
-          {isLoading && (
-            <div className="flex justify-start">
-                <div className="flex items-center space-x-2">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
-                      <SaraAvatar />
-                    </div>
-                    <div className="bg-gray-200 rounded-lg p-3">
-                        <div className="flex items-center justify-center space-x-1">
-                            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-          )}
+          {isLoading && <SaraTypingIndicator />}
           <div ref={chatEndRef} />
         </div>
       </main>

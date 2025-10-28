@@ -27,7 +27,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     h3: ({...props}) => <h3 className="text-lg font-bold mt-4 mb-2" {...props} />,
     ul: ({...props}) => <ul className="list-disc list-outside pl-5 space-y-1" {...props} />,
     ol: ({...props}) => <ol className="list-decimal list-outside pl-5 space-y-1" {...props} />,
-    img: ({...props}) => <img className="mt-2 mb-3 rounded-lg shadow-md max-w-full h-auto" alt={props.alt} {...props} />,
+    // Updated img component for better card visuals
+    img: ({...props}) => <img className="my-3 rounded-lg shadow-md w-full h-auto object-cover max-h-60" alt={props.alt} {...props} />,
+    // Added blockquote component to render hotel cards
+    blockquote: ({...props}) => <div className="bg-white shadow-lg rounded-xl p-4 my-4 border-l-4 border-blue-400" {...props} />,
   };
 
   return (
