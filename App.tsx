@@ -8,7 +8,7 @@ const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'initial',
-      text: "Hello! I'm Sara, your personal AI travel planner. Where would you like to go, or what kind of trip are you dreaming of?",
+      text: "Hello! My name is Sara and I'm here to help you plan an exciting and personalized trip. Where would you like to go, and what are your travel plans? Please share some details such as your destination, trip dates, number of travelers, budget, and any particular interests or activities you'd like to include.",
       sender: Sender.Sara,
     },
   ]);
