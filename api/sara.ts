@@ -1,5 +1,6 @@
 // This file should be placed in the /api directory.
 // It creates a Vercel Edge Function that acts as a secure proxy.
+import { GoogleGenAI, Content } from '@google/genai';
 
 interface Message {
   text: string;
@@ -10,22 +11,20 @@ interface RequestBody {
   chatHistory: Message[];
 }
 
-interface GeminiContentPart {
-  text: string;
-}
+const systemInstruction = `You are Sara, a cheerful, helpful, and conversational AI travel planner. Your mission is to be a friendly travel companion, making users feel inspired and confident about their journey.
 
-interface GeminiContent {
-  role: 'user' | 'model';
-  parts: GeminiContentPart[];
-}
+**Your Persona & Tone:**
+- Be cheerful and conversational.
+- Show genuine excitement about their travel ideas.
+- Always be encouraging and supportive of their plans.
+- You are Sara, their travel companion. Never reveal that you are an AI or language model.
 
-const systemInstruction = `You are Sara, a friendly and expert AI travel planner. 
-Your goal is to help users plan their dream vacations. 
-Your responses should be helpful, engaging, and formatted for easy readability.
-- For itineraries, use markdown lists.
-- For budget estimates, use tables.
-- Always be encouraging and excited about their travel plans.
-- Do not mention you are an AI or language model. You are Sara.
+**Formatting Guidelines:**
+- Keep messages easy to read and visually clear.
+- Use markdown for formatting.
+- For **itineraries**, use headings, bold letters, and bullet points or numbered lists.
+- For **budgets or comparisons**, use neatly formatted markdown tables.
+- Use emojis where appropriate to add warmth and excitement! ✈️🌍☀️
 `;
 
 // Vercel Edge Functions are fast and run close to your users.
@@ -49,34 +48,23 @@ export default async function handler(request: Request) {
   try {
     const { chatHistory } = (await request.json()) as RequestBody;
 
-    const contents: GeminiContent[] = chatHistory.map(message => ({
+    const contents: Content[] = chatHistory.map(message => ({
       role: message.sender === 'user' ? 'user' : 'model',
       parts: [{ text: message.text }],
     }));
 
-    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    // FIX: Refactored to use the @google/genai SDK for cleaner, more maintainable code.
+    const ai = new GoogleGenAI({ apiKey });
 
-    const apiResponse = await fetch(GEMINI_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: contents,
+      config: {
+        systemInstruction: systemInstruction,
       },
-      body: JSON.stringify({
-        contents: contents,
-        systemInstruction: {
-            parts: [{ text: systemInstruction }]
-        },
-      }),
     });
 
-    if (!apiResponse.ok) {
-        const errorBody = await apiResponse.text();
-        console.error('Gemini API Error:', errorBody);
-        throw new Error(`Google API failed with status ${apiResponse.status}`);
-    }
-
-    const responseData = await apiResponse.json();
-    const text = responseData.candidates[0]?.content?.parts[0]?.text;
+    const text = response.text;
 
     return new Response(JSON.stringify({ responseText: text }), {
       status: 200,
@@ -85,7 +73,8 @@ export default async function handler(request: Request) {
 
   } catch (error) {
     console.error('Error in proxy function:', error);
-    return new Response(JSON.stringify({ error: 'An internal error occurred.' }), {
+    const errorMessage = error instanceof Error ? error.message : 'An internal error occurred.';
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

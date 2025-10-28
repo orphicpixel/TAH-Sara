@@ -3,15 +3,16 @@ import { Message, Sender } from './types';
 import { getSaraResponse } from './services/geminiService';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
+import SaraAvatar from './components/SaraAvatar';
+
+const initialMessage: Message = {
+  id: 'sara-initial-1',
+  text: "Hello! My name is Sara and I'm here to help you plan an exciting and personalized trip. Where would you like to go, and what are your travel plans? Please share some details such as your destination, trip dates, number of travelers, budget, and any particular interests or activities you'd like to include.",
+  sender: Sender.Sara,
+};
 
 const App: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'initial',
-      text: "Hello! My name is Sara and I'm here to help you plan an exciting and personalized trip. Where would you like to go, and what are your travel plans? Please share some details such as your destination, trip dates, number of travelers, budget, and any particular interests or activities you'd like to include.",
-      sender: Sender.Sara,
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([initialMessage]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,8 +41,8 @@ const App: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Pass the updated message list to the service
       const saraResponseText = await getSaraResponse(messages, userMessage);
+      
       const saraMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: saraResponseText,
@@ -64,8 +65,8 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col h-screen font-sans">
         <header className="bg-white shadow-md p-4 flex items-center gap-4 sticky top-0 z-10">
-          <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-            S
+          <div className="w-12 h-12 rounded-full flex items-center justify-center">
+            <SaraAvatar />
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-800">Sara</h1>
@@ -83,7 +84,9 @@ const App: React.FC = () => {
           {isLoading && (
             <div className="flex justify-start">
                 <div className="flex items-center space-x-2">
-                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0">S</div>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+                      <SaraAvatar />
+                    </div>
                     <div className="bg-gray-200 rounded-lg p-3">
                         <div className="flex items-center justify-center space-x-1">
                             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
