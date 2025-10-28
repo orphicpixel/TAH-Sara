@@ -1,50 +1,28 @@
-import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
 import { Message } from '../types';
 
-let chat: Chat | null = null;
-
-const systemInstruction = `You are Sara, a friendly and expert AI travel planner. 
-Your goal is to help users plan their dream vacations. 
-Your responses should be helpful, engaging, and formatted for easy readability.
-- For itineraries, use markdown lists.
-- For budget estimates, use tables.
-- Always be encouraging and excited about their travel plans.
-- Do not mention you are an AI or language model. You are Sara.
-`;
-
-const initializeChat = (): Chat => {
-  // The API key is now checked in getSaraResponse, so we can assume it exists here.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-  return ai.chats.create({
-    model: 'gemini-2.5-flash',
-    config: {
-      systemInstruction,
-    },
-  });
-};
-
 export const getSaraResponse = async (chatHistory: Message[], newUserMessage: Message): Promise<string> => {
-    if (!process.env.API_KEY) {
-        console.error("API_KEY environment variable not set. The application will not be able to connect to the Gemini API.");
-        return "I'm sorry, but it looks like I'm not set up correctly to help you right now. Please ask the site administrator to configure the service.";
+  try {
+    const response = await fetch('/api/sara', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Send the entire history for the backend to have full context
+      body: JSON.stringify({ chatHistory: [...chatHistory, newUserMessage] }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'An unknown server error occurred.' }));
+        console.error("API proxy error:", errorData.error);
+        throw new Error("Failed to get a response from the server.");
     }
 
-    try {
-        if (!chat) {
-            chat = initializeChat();
-        }
-        
-        const response: GenerateContentResponse = await chat.sendMessage({
-            message: newUserMessage.text
-        });
+    const data = await response.json();
+    return data.responseText;
 
-        return response.text;
-    } catch (error) {
-        console.error("Gemini API call failed:", error);
-        // Reset chat instance on failure to allow re-initialization on next attempt.
-        chat = null;
-        // The error will be caught and handled in the App component
-        throw error;
-    }
+  } catch (error) {
+    console.error("Failed to fetch from API proxy:", error);
+    // This error will be caught by the App component, which will display a user-friendly message.
+    throw error;
+  }
 };

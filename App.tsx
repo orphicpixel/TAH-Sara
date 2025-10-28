@@ -34,11 +34,13 @@ const App: React.FC = () => {
       sender: Sender.User,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
     try {
+      // Pass the updated message list to the service
       const saraResponseText = await getSaraResponse(messages, userMessage);
       const saraMessage: Message = {
         id: (Date.now() + 1).toString(),
