@@ -1,14 +1,13 @@
 import { Message } from '../types';
 
-export const getSaraResponse = async (chatHistory: Message[], newUserMessage: Message): Promise<string> => {
+export const getSaraResponse = async (chatHistory: Message[]): Promise<string> => {
   try {
     const response = await fetch('/api/sara', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      // Send the entire history for the backend to have full context
-      body: JSON.stringify({ chatHistory: [...chatHistory, newUserMessage] }),
+      body: JSON.stringify({ chatHistory: chatHistory }),
     });
 
     if (!response.ok) {

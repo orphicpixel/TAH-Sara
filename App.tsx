@@ -54,7 +54,7 @@ const App: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const saraResponseText = await getSaraResponse(messages, userMessage);
+      const saraResponseText = await getSaraResponse(newMessages);
       
       const saraMessage: Message = {
         id: (Date.now() + 1).toString(),
