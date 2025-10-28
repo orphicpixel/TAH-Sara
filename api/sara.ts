@@ -48,7 +48,22 @@ export default async function handler(request: Request) {
   try {
     const { chatHistory } = (await request.json()) as RequestBody;
 
-    const contents: Content[] = chatHistory.map(message => ({
+    // The Gemini API requires that the history starts with a user message.
+    // We'll find the first user message and slice the history from that point
+    // to remove any preceding messages from Sara (the model).
+    const firstUserIndex = chatHistory.findIndex(m => m.sender === 'user');
+    const historyForApi = firstUserIndex !== -1 ? chatHistory.slice(firstUserIndex) : [];
+    
+    // This case should ideally not be hit with the current front-end logic,
+    // but it's a good safeguard.
+    if (historyForApi.length === 0) {
+      return new Response(JSON.stringify({ error: "Cannot process a conversation with no user messages." }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const contents: Content[] = historyForApi.map(message => ({
       role: message.sender === 'user' ? 'user' : 'model',
       parts: [{ text: message.text }],
     }));
