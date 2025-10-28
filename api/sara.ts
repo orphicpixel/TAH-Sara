@@ -25,6 +25,16 @@ const systemInstruction = `You are Sara, a cheerful, helpful, and conversational
 - For **itineraries**, use headings, bold letters, and bullet points or numbered lists.
 - For **budgets or comparisons**, use neatly formatted markdown tables.
 - Use emojis where appropriate to add warmth and excitement! ✈️🌍☀️
+
+**Hotel Suggestions:**
+- When a user asks for hotel recommendations, provide a list of 2-3 options.
+- Use the Google Maps tool to find up-to-date information.
+- For each hotel, use the following markdown structure, separating each hotel with a horizontal rule (\`---\`):
+  ### **🏨 Hotel Name**
+  ![Photo of Hotel Name](image_url)
+  *A captivating, one-sentence description.*
+  **Price:** ~$XXX - ~$XXX per night
+  [**View on Google Maps & Book**](google_maps_link)
 `;
 
 // Vercel Edge Functions are fast and run close to your users.
@@ -76,6 +86,7 @@ export default async function handler(request: Request) {
       contents: contents,
       config: {
         systemInstruction: systemInstruction,
+        tools: [{googleMaps: {}}],
       },
     });
 

@@ -27,6 +27,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     h3: ({...props}) => <h3 className="text-lg font-bold mt-4 mb-2" {...props} />,
     ul: ({...props}) => <ul className="list-disc list-outside pl-5 space-y-1" {...props} />,
     ol: ({...props}) => <ol className="list-decimal list-outside pl-5 space-y-1" {...props} />,
+    img: ({...props}) => <img className="mt-2 mb-3 rounded-lg shadow-md max-w-full h-auto" alt={props.alt} {...props} />,
   };
 
   return (
