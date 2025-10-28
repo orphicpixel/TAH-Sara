@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Message, Sender } from './types';
 import { getSaraResponse } from './services/geminiService';
@@ -15,7 +14,6 @@ const App: React.FC = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +37,6 @@ const App: React.FC = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
-    setError(null);
 
     try {
       const saraResponseText = await getSaraResponse(messages, userMessage);
@@ -50,8 +47,7 @@ const App: React.FC = () => {
       };
       setMessages((prev) => [...prev, saraMessage]);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setError(`Sara is having trouble connecting. Please try again later. Error: ${errorMessage}`);
+      console.error("An error occurred while fetching Sara's response:", err);
       const errorResponseMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: "I seem to be having some trouble right now. Please try again in a moment.",
@@ -100,7 +96,6 @@ const App: React.FC = () => {
         </div>
       </main>
       <footer className="bg-white border-t border-gray-200 p-4 sticky bottom-0">
-        {error && <p className="text-red-500 text-center text-sm mb-2">{error}</p>}
         <div className="max-w-4xl mx-auto">
           <ChatInput
             input={input}

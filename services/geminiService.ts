@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
 import { Message } from '../types';
 
@@ -14,10 +13,7 @@ Your responses should be helpful, engaging, and formatted for easy readability.
 `;
 
 const initializeChat = (): Chat => {
-  if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-  }
-
+  // The API key is now checked in getSaraResponse, so we can assume it exists here.
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   return ai.chats.create({
@@ -29,6 +25,11 @@ const initializeChat = (): Chat => {
 };
 
 export const getSaraResponse = async (chatHistory: Message[], newUserMessage: Message): Promise<string> => {
+    if (!process.env.API_KEY) {
+        console.error("API_KEY environment variable not set. The application will not be able to connect to the Gemini API.");
+        return "I'm sorry, but it looks like I'm not set up correctly to help you right now. Please ask the site administrator to configure the service.";
+    }
+
     try {
         if (!chat) {
             chat = initializeChat();
