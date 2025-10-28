@@ -51,7 +51,7 @@ const App: React.FC = () => {
       setMessages((prev) => [...prev, saraMessage]);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setError(`Sara is having trouble connecting. Please check your API key and try again. Error: ${errorMessage}`);
+      setError(`Sara is having trouble connecting. Please try again later. Error: ${errorMessage}`);
       const errorResponseMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: "I seem to be having some trouble right now. Please try again in a moment.",
