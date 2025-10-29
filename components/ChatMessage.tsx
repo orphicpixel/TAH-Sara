@@ -15,7 +15,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const wrapperClasses = isUser ? 'flex justify-end items-end' : 'flex justify-start items-end';
   const messageClasses = isUser
     ? 'bg-blue-500 text-white rounded-l-lg rounded-tr-lg'
-    : 'bg-gray-200 text-gray-800 rounded-r-lg rounded-tl-lg';
+    : 'bg-white text-gray-800 rounded-r-lg rounded-tl-lg border border-gray-200';
 
   // Custom components for styling markdown elements within Sara's responses.
   const saraMarkdownComponents = {
