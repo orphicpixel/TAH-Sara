@@ -6,6 +6,7 @@ interface ChatInputProps {
   setInput: (value: string) => void;
   onSend: () => void;
   isLoading: boolean;
+  placeholder?: string;
 }
 
 const SendIcon = () => (
@@ -15,7 +16,7 @@ const SendIcon = () => (
 );
 
 
-const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSend, isLoading }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSend, isLoading, placeholder }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       onSend();
@@ -29,7 +30,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSend, isLoadin
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Ask Sara about your next trip..."
+        placeholder={placeholder || "Ask Sara about your next trip..."}
         className="flex-1 w-full px-4 py-3 bg-gray-100 border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200"
         disabled={isLoading}
       />
