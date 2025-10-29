@@ -8,20 +8,9 @@ import SaraTypingIndicator from './components/SaraTypingIndicator';
 
 const initialMessage: Message = {
   id: 'sara-initial-1',
-  text: "Hello! My name is Sara. To help you plan an exciting and personalized trip, I'll need to ask you a few questions.",
+  text: "Hello! My name is Sara and I'm here to help you plan an exciting and personalized trip. Where would you like to go, and what are your travel plans? Please share some details such as your destination, trip dates, number of travelers, budget, and any particular interests or activities you'd like to include.",
   sender: Sender.Sara,
 };
-
-const questions: string[] = [
-  "What is your destination of choice?",
-  "When are you planning to travel?",
-  "How many days are you planning to travel?",
-  "What is your budget (e.g., per person, total)?",
-  "What type of traveler are you? (e.g., adventurer, relaxer, cultural explorer, leisure)",
-  "Who do you plan on traveling with on your next adventure?",
-  "Do you have any food preferences, such as halal, vegetarian, or vegan?",
-  "Finally, do you have any food allergies or dietary restrictions?",
-];
 
 const NewChatIcon: React.FC = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -39,9 +28,6 @@ const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([initialMessage]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isGathering, setIsGathering] = useState(true);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<string[]>([]);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -51,22 +37,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]);
-
-  useEffect(() => {
-    if (messages.length === 1 && isGathering) {
-      setIsLoading(true);
-      setTimeout(() => {
-        const firstQuestion: Message = {
-          id: 'sara-q-0',
-          text: questions[0],
-          sender: Sender.Sara,
-        };
-        setMessages(prev => [...prev, firstQuestion]);
-        setIsLoading(false);
-      }, 1000);
-    }
-  }, [messages, isGathering]);
+  }, [messages]);
   
   const handleSend = useCallback(async () => {
     if (input.trim() === '' || isLoading) return;
@@ -76,100 +47,38 @@ const App: React.FC = () => {
       text: input,
       sender: Sender.User,
     };
-    
-    setMessages(prev => [...prev, userMessage]);
-    const currentInput = input;
+
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
-    if (isGathering) {
-      const updatedAnswers = [...userAnswers, currentInput];
-      setUserAnswers(updatedAnswers);
-
-      const nextQuestionIndex = currentQuestionIndex + 1;
-
-      if (nextQuestionIndex < questions.length) {
-        setCurrentQuestionIndex(nextQuestionIndex);
-        setTimeout(() => {
-          const nextQuestion: Message = {
-            id: `sara-q-${nextQuestionIndex}`,
-            text: questions[nextQuestionIndex],
-            sender: Sender.Sara,
-          };
-          setMessages(prev => [...prev, nextQuestion]);
-          setIsLoading(false);
-        }, 1200);
-      } else {
-        setIsGathering(false);
-
-        const thinkingMessage: Message = {
-          id: 'sara-thinking',
-          text: "Thank you! I have all the information I need. I'm now crafting a tailored travel plan for you. This may take a moment...",
-          sender: Sender.Sara,
-        };
-        
-        setTimeout(() => {
-            setMessages(prev => [...prev, thinkingMessage]);
-        }, 300);
-        
-        const summaryPrompt = `Please act as Sara, an expert AI travel planner. A user has provided their travel preferences. Based **only** on the information below, create a detailed and personalized travel itinerary with hotel, flight, and restaurant recommendations that matches their needs.
-
-**User's Travel Preferences:**
-${questions.map((q, i) => `- ${q.split('?')[0]}: ${updatedAnswers[i]}`).join('\n')}
-`;
-        
-        const planRequestHistory: Message[] = [{ id: 'summary-prompt', text: summaryPrompt, sender: Sender.User }];
-
-        try {
-          const saraResponseText = await getSaraResponse(planRequestHistory);
-          const saraMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            text: saraResponseText,
-            sender: Sender.Sara,
-          };
-          setMessages(prev => [...prev.slice(0, -1), saraMessage]);
-        } catch (err) {
-          console.error("An error occurred while fetching Sara's response:", err);
-          const errorResponseMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            text: "I seem to be having some trouble right now. Please try again in a moment.",
-            sender: Sender.Sara,
-          };
-          setMessages((prev) => [...prev.slice(0, -1), errorResponseMessage]);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    } else {
-      try {
-        const saraResponseText = await getSaraResponse([...messages, userMessage]);
-        const saraMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          text: saraResponseText,
-          sender: Sender.Sara,
-        };
-        setMessages((prev) => [...prev, saraMessage]);
-      } catch (err) {
-        console.error("An error occurred while fetching Sara's response:", err);
-        const errorResponseMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          text: "I seem to be having some trouble right now. Please try again in a moment.",
-          sender: Sender.Sara,
-        };
-        setMessages((prev) => [...prev, errorResponseMessage]);
-      } finally {
-        setIsLoading(false);
-      }
+    try {
+      const saraResponseText = await getSaraResponse(newMessages);
+      
+      const saraMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: saraResponseText,
+        sender: Sender.Sara,
+      };
+      setMessages((prev) => [...prev, saraMessage]);
+    } catch (err) {
+      console.error("An error occurred while fetching Sara's response:", err);
+      const errorResponseMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "I seem to be having some trouble right now. Please try again in a moment.",
+        sender: Sender.Sara,
+      };
+      setMessages((prev) => [...prev, errorResponseMessage]);
+    } finally {
+      setIsLoading(false);
     }
-  }, [input, isLoading, messages, isGathering, currentQuestionIndex, userAnswers]);
+  }, [input, isLoading, messages]);
 
   const handleNewChat = () => {
     setMessages([initialMessage]);
     setInput('');
     setIsLoading(false);
-    setIsGathering(true);
-    setCurrentQuestionIndex(0);
-    setUserAnswers([]);
   };
 
   const handleDownloadTranscript = () => {
@@ -188,7 +97,6 @@ ${questions.map((q, i) => `- ${q.split('?')[0]}: ${updatedAnswers[i]}`).join('\n
     URL.revokeObjectURL(url);
   };
 
-  const placeholderText = isGathering ? "Type your answer here..." : "Ask a follow-up question...";
 
   return (
     <div className="flex flex-col h-screen font-sans">
@@ -238,7 +146,6 @@ ${questions.map((q, i) => `- ${q.split('?')[0]}: ${updatedAnswers[i]}`).join('\n
             setInput={setInput}
             onSend={handleSend}
             isLoading={isLoading}
-            placeholder={placeholderText}
           />
         </div>
       </footer>

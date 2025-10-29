@@ -20,7 +20,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   // Custom components for styling markdown elements within Sara's responses.
   const saraMarkdownComponents = {
     table: ({...props}) => <table className="w-full my-2 border-collapse text-sm bg-white shadow-sm rounded-lg" {...props} />,
-    thead: ({...props}) => <thead className="bg-gray-100" {...props} />,
+    thead: ({...props}) => <thead className="bg-white" {...props} />,
     th: ({...props}) => <th className="border border-gray-300 p-2 font-semibold text-left" {...props} />,
     td: ({...props}) => <td className="border border-gray-300 p-2" {...props} />,
     a: ({...props}) => <a className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
