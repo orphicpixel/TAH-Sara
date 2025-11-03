@@ -6,7 +6,7 @@ interface SaraAvatarProps {
 
 const SaraAvatar: React.FC<SaraAvatarProps> = ({ size = 'small' }) => {
     const sizeClasses = size === 'large' ? 'w-12 h-12' : 'w-10 h-10';
-    const avatarUrl = 'https://theawayhome.com/wp-content/uploads/2025/05/tah-favicon-300x300.png';
+    const avatarUrl = 'https://theawayhome.com/wp-content/uploads/2025/11/Sara-TAH.png';
 
     return (
         <img
