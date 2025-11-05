@@ -6,7 +6,8 @@ interface SaraAvatarProps {
 
 const SaraAvatar: React.FC<SaraAvatarProps> = ({ size = 'small' }) => {
     const sizeClasses = size === 'large' ? 'w-12 h-12' : 'w-10 h-10';
-    const avatarUrl = 'https://theawayhome.com/wp-content/uploads/2025/11/Sara-TAH.png';
+    // Using a reliable public URL from Imgur to avoid storage access issues.
+    const avatarUrl = 'https://i.imgur.com/2N1s4oB.png';
 
     return (
         <img
