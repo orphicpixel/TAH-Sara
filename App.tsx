@@ -29,10 +29,15 @@ const App: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLElement>(null);
 
   const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   };
 
   useEffect(() => {
@@ -130,13 +135,12 @@ const App: React.FC = () => {
             </button>
           </div>
       </header>
-      <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-gray-50">
+      <main ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-gray-50">
         <div className="max-w-4xl mx-auto space-y-6">
           {messages.map((msg) => (
             <ChatMessage key={msg.id} message={msg} />
           ))}
           {isLoading && <SaraTypingIndicator />}
-          <div ref={chatEndRef} />
         </div>
       </main>
       <footer className="bg-white border-t border-gray-200 p-4 sticky bottom-0">
